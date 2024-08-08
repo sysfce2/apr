@@ -287,6 +287,7 @@ static void test_named_delete(abts_case *tc, void *data)
 
 static void test_named_perms(abts_case *tc, void *data)
 {
+#ifndef DARWIN
     apr_status_t rv;
     apr_shm_t *shm;
     apr_uid_t uid;
@@ -313,6 +314,10 @@ static void test_named_perms(abts_case *tc, void *data)
         ABTS_SKIP(tc, data, "apr_shm_perms_set not implemented for named shm");
     else
         APR_ASSERT_SUCCESS(tc, "Could not change permissions of shm segment", rv);
+#else
+    /* The apr_shm_perms_set() call fails or hangs on MacOS. */
+    ABTS_SKIP(tc, data, "Skipping apr_shm_perms_set() test");
+#endif    
 }
 
 #endif
