@@ -876,9 +876,16 @@ static void test_ldap_global_opts(abts_case *tc, void *data)
     apr_ldap_opt_t opt;
     apr_status_t status;
 
+    char errbuf[128];
+
     apr_pool_create(&pool, p);
 
     status = apr_ldap_option_get(pool, NULL, APR_LDAP_OPT_API_INFO, &opt, &err);
+
+    if (status != APR_SUCCESS) {
+        abts_log_message("apr_ldap_option_get: %s [%s]\n", err.reason,
+                          apr_strerror(status, errbuf, sizeof(errbuf)));
+    }
 
     ABTS_TRUE(tc, status == APR_SUCCESS);
     ABTS_TRUE(tc, err.rc == 0);
