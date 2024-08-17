@@ -896,6 +896,15 @@ static void test_ldap_global_opts(abts_case *tc, void *data)
     /* feature may exist, or may not */
     ABTS_TRUE(tc, status == APR_SUCCESS || status == APR_EINVAL);
 
+    status = apr_ldap_option_get(pool, NULL, APR_LDAP_OPT_DEBUG_LEVEL, &opt, &err);
+    if (APR_ENOTIMPL == status) {
+        abts_log_message("apr_ldap_option_get(APR_LDAP_OPT_DEBUG_LEVEL) not implemented on this platform, skipping test\n");
+        return;
+    }       
+    else {
+        ABTS_TRUE(tc, status == APR_SUCCESS);
+    }
+
     apr_pool_destroy(pool);
 }
 

@@ -412,6 +412,46 @@ typedef enum {
 } apr_ldap_protocol_version_e;
 
 /**
+ * LDAP debug settings
+ *
+ * @see apr_ldap_option_get
+ * @see apr_ldap_option_set
+ * @see APR_LDAP_OPT_DEBUG_LEVEL
+ */
+typedef enum {
+    /** LDAP trace debug */
+    LDAP_DEBUG_TRACE = 0x0001,
+    /** LDAP packet debug */
+    LDAP_DEBUG_PACKETS = 0x0002,
+    /** LDAP arguments debug */
+    LDAP_DEBUG_ARGS = 0x0004,
+    /** LDAP connections debug */
+    LDAP_DEBUG_CONNS = 0x0008,
+    /** LDAP BER debug */
+    LDAP_DEBUG_BER = 0x0010,
+    /** LDAP filter debug */
+    LDAP_DEBUG_FILTER = 0x0020,
+    /** LDAP configuration debug */
+    LDAP_DEBUG_CONFIG = 0x0040,
+    /** LDAP acl debug */
+    LDAP_DEBUG_ACL = 0x0080,
+    /** LDAP statistics debug */
+    LDAP_DEBUG_STATS = 0x0100,
+    /** LDAP more statistics debug */
+    LDAP_DEBUG_STATS2 = 0x0200,
+    /** LDAP shell debug */
+    LDAP_DEBUG_SHELL = 0x0400,
+    /** LDAP parse debug */
+    LDAP_DEBUG_PARSE = 0x0800,
+    /** LDAP synchronise debug */
+    LDAP_DEBUG_SYNC = 0x4000,
+    /** LDAP no debug */
+    LDAP_DEBUG_NONE =  0x8000,
+    /** LDAP all debug */
+    LDAP_DEBUG_ANY = (-1)
+} apr_ldap_debug_e;
+
+/**
  * LDAP deref settings
  *  
  * @see apr_ldap_option_set
@@ -498,6 +538,13 @@ typedef enum {
  * @see apr_ldap_apifeature_info_t
  */
 #define APR_LDAP_OPT_API_FEATURE_INFO 0x6ff7
+/**
+ * Get or set the debug level.
+ * @see apr_ldap_option_get
+ * @see apr_ldap_option_set
+ * @see apr_ldap_debug_e
+ */
+#define APR_LDAP_OPT_DEBUG_LEVEL 0x5001
 /**
  * Get the dereference setting.
  * @see apr_ldap_option_get
@@ -794,6 +841,12 @@ typedef union apr_ldap_opt_t {
      * @see APR_LDAP_OPT_RESULT_CODE
      */
     int result;
+    /**
+     * Debug level
+     *
+     * @see APR_LDAP_OPT_DEBUG_LEVEL
+     */
+    apr_ldap_debug_e debug;
 } apr_ldap_opt_t;
 
 
@@ -810,6 +863,7 @@ typedef union apr_ldap_opt_t {
  *        structure.
  * @see APR_LDAP_OPT_API_FEATURE_INFO
  * @see APR_LDAP_OPT_API_INFO
+ * @see APR_LDAP_OPT_DEBUG_LEVEL
  * @see APR_LDAP_OPT_DEREF
  * @see APR_LDAP_OPT_DESC
  * @see APR_LDAP_OPT_HANDLE
@@ -841,6 +895,7 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_option_get(apr_pool_t *pool, apr_ldap_t 
  * @param invalue The value to set
  * @param result_err On error, error details are written to the
  *        structure.
+ * @see APR_LDAP_OPT_DEBUG_LEVEL
  * @see APR_LDAP_OPT_DEREF
  * @see APR_LDAP_OPT_DESC
  * @see APR_LDAP_OPT_NETWORK_TIMEOUT
