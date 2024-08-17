@@ -228,8 +228,10 @@ apr_status_t apu_dso_load(apr_dso_handle_t **dlhandleptr,
 
     rv = apr_dso_sym(dsoptr, dlhandle, modsym);
     if (rv != APR_SUCCESS) { /* APR_ESYMNOTFOUND */
-        err->msg = apr_pstrdup(pool, apr_dso_error(dlhandle, NULL, 0));
-        err->reason = apr_pstrdup(pool, module);
+        if (err) {
+            err->msg = apr_pstrdup(pool, apr_dso_error(dlhandle, NULL, 0));
+            err->reason = apr_pstrdup(pool, module);
+        }
         apr_dso_unload(dlhandle);
     }
     else {
