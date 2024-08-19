@@ -38,7 +38,7 @@
   * - TESTLDAP=ldap://localhost:389
   * - TESTLDAP_TLS=ldap://starttls.server:389
   * - TESTLDAPS=ldaps://ssl.server:636
-  * - TESTLDAPI=ldapi://%2ftmp%2fslapd-server.socket/o=example,c=gb?mail?sub
+  * - TESTLDAPI=/tmp/slapd-server.socket
   *
   * Simple bind:
   *
