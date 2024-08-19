@@ -73,7 +73,7 @@ OPTION(INSTALL_PDB          "Install .pdb files (if generated)"  ON)
 OPTION(APR_BUILD_TESTAPR    "Build the test suite"         ON)
 OPTION(APR_BUILD_SHARED     "Build shared libraries"       ON)
 OPTION(APR_BUILD_STATIC     "Build static libraries"       ON)
-OPTION(APR_MODULAR_DSO      "Use DSO build of modular components." ON)
+OPTION(APR_MODULAR_DSO      "Use DSO build of modular components" ON)c
 OPTION(APR_POOL_DEBUG       "Turn on pools debugging."     OFF)
 OPTION(TEST_STATIC_LIBS     "Test programs use APR static libraries instead of shared libraries?" OFF)
 
