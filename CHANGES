@@ -1,6 +1,10 @@
                                                      -*- coding: utf-8 -*-
 Changes for APR 2.0.0
 
+  *) apr_proc_mutex_timedlock() should return APR_TIMEUP on systems
+     where semtimedop() returns ETIMEDOUT rather than
+     EAGAIN. Likely AIX-only. [Eric Covener]
+
   *) apr_ldap: Add the new APR LDAP API. [Graham Leggett]
 
   *) Add APR_OFF_MAX to give the maximum value of apr_off_t. [Graham
