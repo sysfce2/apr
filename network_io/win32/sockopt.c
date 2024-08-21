@@ -72,13 +72,13 @@ APR_DECLARE(apr_status_t) apr_socket_timeout_set(apr_socket_t *sock, apr_interva
         if (sock->timeout != t)
         {
             /* Win32 timeouts are in msec, represented as int */
-            sock->timeout_ms = (int)apr_time_as_msec(t);
+            int timeout_ms = (int)apr_time_as_msec(t);
             setsockopt(sock->socketdes, SOL_SOCKET, SO_RCVTIMEO,
-                       (char *) &sock->timeout_ms,
-                       sizeof(sock->timeout_ms));
+                       (char *) &timeout_ms,
+                       sizeof(timeout_ms));
             setsockopt(sock->socketdes, SOL_SOCKET, SO_SNDTIMEO,
-                       (char *) &sock->timeout_ms,
-                       sizeof(sock->timeout_ms));
+                       (char *) &timeout_ms,
+                       sizeof(timeout_ms));
         }
     }
     else if (t < 0) {

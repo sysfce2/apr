@@ -370,9 +370,8 @@ APR_DECLARE(apr_status_t) apr_socket_sendfile(apr_socket_t *sock,
             if ((status == APR_FROM_OS_ERROR(ERROR_IO_PENDING)) ||
                 (status == APR_FROM_OS_ERROR(WSA_IO_PENDING)))
             {
-                rv = WaitForSingleObject(sock->overlapped->hEvent,
-                                         (DWORD)(sock->timeout >= 0
-                                                 ? sock->timeout_ms : INFINITE));
+                rv = apr_wait_for_single_object(sock->overlapped->hEvent, sock->timeout);
+
                 if (rv == WAIT_OBJECT_0) {
                     status = APR_SUCCESS;
                     if (!WSAGetOverlappedResult(sock->socketdes,
