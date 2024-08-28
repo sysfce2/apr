@@ -29,6 +29,7 @@
 #include "apr_poll.h"
 #include "apr_pools.h"
 #include "apr_portable.h"
+#include "apr_cstr.h"
 #include "apr_strings.h"
 #include "apr_escape.h"
 
@@ -1574,7 +1575,7 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_result(apr_pool_t *pool,
 
                     /* support for RFC4522 binary encoding option */
                     while ((sc = strchr(sc, ';'))) {
-                        if (!strcasecmp(sc, ";binary") && (sc[7] == 0 || sc[7] == ';')) {
+                        if (!apr_cstr_casecmpn(sc, ";binary", 7) && (sc[7] == 0 || sc[7] == ';')) {
                             binary = 1;
                             break;
                         }
