@@ -1568,16 +1568,32 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_result(apr_pool_t *pool,
 
                 if (vals) {
 
-                    int k, nvals;
+                    int k, nvals, binary = 0;
+
+                    char *sc = attr;
+
+                    /* support for RFC4522 binary encoding option */
+                    while ((sc = strchr(sc, ';'))) {
+                        if (!strcasecmp(sc, ";binary") && (sc[7] == 0 || sc[7] == ';')) {
+                            binary = 1;
+                            break;
+                        }
+                    }
 
                     nvals = ldap_count_values_len(vals);
 
                     for (k = 0; k < nvals; k++) {
 
                         apr_buffer_t buf;
+                        char *str = NULL;
 
-                        apr_buffer_mem_set(&buf, vals[k]->bv_val, vals[k]->bv_len);
-// fixme - tell cb if binary
+                        if (binary) {
+                            apr_buffer_mem_set(&buf, vals[k]->bv_val, vals[k]->bv_len);
+                        }
+                        else {
+                            str = strndup(vals[k]->bv_val, vals[k]->bv_len);
+                            apr_buffer_str_set(&buf, str, vals[k]->bv_len);
+                        }
 
                         if (res->entry_cb.search) {
                             status = res->entry_cb.search(ldap, dn, res->nentries, nattrs, j,
@@ -1585,6 +1601,10 @@ APU_DECLARE_LDAP(apr_status_t) apr_ldap_result(apr_pool_t *pool,
                         }
                         else {
                             status = apr_ldap_status(err->rc, APR_EGENERAL);
+                        }
+
+                        if (str) {
+                            free(str);
                         }
                     }
 
