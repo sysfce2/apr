@@ -3306,7 +3306,8 @@ if test -d $srcdir/test; then
    AC_CONFIG_FILES([test/Makefile test/internal/Makefile])
 fi
 
-AC_CONFIG_FILES([include/private/apu_select_dbm.h
+AC_CONFIG_FILES([include/private/apu_ldap_internal.h
+                 include/private/apu_select_dbm.h
                  include/apu_want.h])
 
 dir=include/arch/unix

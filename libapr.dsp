@@ -1115,6 +1115,57 @@ SOURCE=.\include\apu.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\private\apu_ldap_internal.h.in
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\private\apu_ldap_internal.hw
+
+!IF  "$(CFG)" == "libapr - Win32 Release"
+
+# Begin Custom Build - Creating apu_ldap_internal.h from apu_ldap_internal.hw
+InputPath=.\include\private\apu_ldap_internal.hw
+
+".\include\private\apu_ldap_internal.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+        type .\include\private\apu_ldap_internal.hw > .\include\private\apu_ldap_internal.h
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "libapr - Win32 Debug"
+
+# Begin Custom Build - Creating apu_ldap_internal.h from apu_ldap_internal.hw
+InputPath=.\include\private\apu_ldap_internal.hw
+
+".\include\private\apu_ldap_internal.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+        type .\include\private\apu_ldap_internal.hw > .\include\private\apu_ldap_internal.h
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "libapr - x64 Release"
+
+# Begin Custom Build - Creating apu_ldap_internal.h from apu_ldap_internal.hw
+InputPath=.\include\private\apu_ldap_internal.hw
+
+".\include\private\apu_ldap_internal.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+        type .\include\private\apu_ldap_internal.hw > .\include\private\apu_ldap_internal.h
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "libapr - x64 Debug"
+
+# Begin Custom Build - Creating apu_ldap_internal.h from apu_ldap_internal.hw
+InputPath=.\include\private\apu_ldap_internal.hw
+
+".\include\private\apu_ldap_internal.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+        type .\include\private\apu_ldap_internal.hw > .\include\private\apu_ldap_internal.h
+
+# End Custom Build
+
+!ENDIF
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\private\apu_select_dbm.h.in
 # End Source File
 # Begin Source File
