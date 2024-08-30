@@ -167,7 +167,7 @@ static void test_buffers(abts_case *tc, void *data)
     apr_pool_t *pool;
     apr_array_header_t *vals;
 
-    apr_buffer_t src[2];
+    apr_buffer_t src[4];
     apr_buffer_t *dst;
 
     char *str;
@@ -180,11 +180,13 @@ static void test_buffers(abts_case *tc, void *data)
     /* populate our source buffers */
     apr_buffer_mem_set(&src[0], test_memory, sizeof(test_memory));
     apr_buffer_str_set(&src[1], test_string, strlen(test_string));
+    apr_buffer_mem_set(&src[2], test_memory, sizeof(test_memory));
+    apr_buffer_str_set(&src[3], test_string, strlen(test_string));
 
     /* duplicate the source buffers, allocating memory from a pool */
-    vals = apr_array_make(pool, 2, sizeof(apr_buffer_t));
-    apr_buffer_arraydup((apr_buffer_t **)(&vals->elts), src, test_buffers_palloc, pool, 2);
-    vals->nelts = 2;
+    vals = apr_array_make(pool, 4, sizeof(apr_buffer_t));
+    apr_buffer_arraydup((apr_buffer_t **)(&vals->elts), src, test_buffers_palloc, pool, 4);
+    vals->nelts = 4;
 
     dst = apr_array_pop(vals);
 
@@ -201,10 +203,10 @@ static void test_buffers(abts_case *tc, void *data)
     ABTS_ASSERT(tc, "buffer copy fail",
                     !apr_buffer_cmp(dst, &src[1]));
 
-    str = apr_buffer_pstrncat(pool, &src[0], 2, "; ", APR_BUFFER_BASE64, &len);
+    str = apr_buffer_pstrncat(pool, &src[0], 4, "; ", APR_BUFFER_BASE64, &len);
 
     ABTS_ASSERT(tc, "buffer strcat fail",
-                    !strcmp(str, "AQIDBA==; Hello"));
+                    !strcmp(str, "AQIDBA==; Hello; AQIDBA==; Hello"));
 
     apr_pool_destroy(pool);
 }

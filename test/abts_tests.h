@@ -74,6 +74,7 @@ const struct testlist {
     {testuri},
     {testuuid},
     {testbuckets},
+    {testbuffer},
     {testpass},
     {testbase64},
     {testmd4},
@@ -94,7 +95,6 @@ const struct testlist {
     {testsiphash},
     {testjson},
     {testjose},
-    {testbuffer},
     {testldap}
 };
 
