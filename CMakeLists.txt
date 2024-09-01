@@ -236,6 +236,7 @@ SET(APR_PUBLIC_HEADERS_STATIC
   include/apr_inherit.h
   include/apr_jose.h
   include/apr_json.h
+  include/apr_ldap.h
   include/apr_lib.h
   include/apr_md4.h
   include/apr_md5.h
