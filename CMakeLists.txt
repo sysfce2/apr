@@ -111,12 +111,17 @@ IF(APR_POOL_DEBUG)
   ADD_COMPILE_DEFINITIONS(APR_POOL_DEBUG=1)
 ENDIF()
 
+IF(APR_MODULAR_DSO)
+  ADD_COMPILE_DEFINITIONS(APR_HAVE_MODULAR_DSO=1)
+ELSE()
+  ADD_COMPILE_DEFINITIONS(APR_HAVE_MODULAR_DSO=0)
+ENDIF()
+
 # create 1-or-0 representation of feature tests for apr.h
 
 SET(apu_use_libxml2_10 0)
 SET(apu_use_expat_10 0)
 SET(apu_use_xmllite_10 0)
-SET(apr_have_modular_dso_10 0)
 
 IF(APU_USE_EXPAT)
   SET(apu_use_expat_10 1)
@@ -124,10 +129,6 @@ ELSEIF(APU_USE_LIBXML2)
   SET(apu_use_libxml2_10 1)
 ELSE(APU_USE_XMLLITE)
   SET(apu_use_xmllite_10 1)
-ENDIF()
-
-IF(APR_MODULAR_DSO)
-  SET(apr_have_modular_dso_10 1)
 ENDIF()
 
 # Read current version.
@@ -535,7 +536,7 @@ IF (BUILD_SHARED_LIBS)
   TARGET_LINK_LIBRARIES(${apr_libname}
                         PRIVATE ${XMLLIB_LIBRARIES} ${XLATE_LIBRARIES} ${APR_SYSTEM_LIBS} ${APR_EXTRA_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(${apr_libname}
-                             PRIVATE "APR_DECLARE_EXPORT;APR_HAVE_MODULAR_DSO=${apr_have_modular_dso_10}"
+                             PRIVATE "APR_DECLARE_EXPORT"
                              INTERFACE "APR_DECLARE_IMPORT")
   TARGET_INCLUDE_DIRECTORIES(${apr_libname}
     PRIVATE ${APR_INCLUDE_DIRECTORIES} ${XMLLIB_INCLUDE_DIR} ${XLATE_INCLUDE_DIR} ${APR_EXTRA_INCLUDE_DIRECTORIES}
@@ -549,7 +550,7 @@ ELSE()
   TARGET_LINK_LIBRARIES(${apr_libname}
                         PRIVATE ${XMLLIB_LIBRARIES} ${XLATE_LIBRARIES} ${APR_SYSTEM_LIBS} ${APR_EXTRA_LIBRARIES})
   TARGET_COMPILE_DEFINITIONS(${apr_libname}
-                             PRIVATE "APR_DECLARE_STATIC;APR_HAVE_MODULAR_DSO=${apr_have_modular_dso_10}"
+                             PRIVATE "APR_DECLARE_STATIC"
                              INTERFACE "APR_DECLARE_STATIC")
   TARGET_INCLUDE_DIRECTORIES(${apr_libname}
     PRIVATE ${APR_INCLUDE_DIRECTORIES} ${XMLLIB_INCLUDE_DIR} ${XLATE_INCLUDE_DIR} ${APR_EXTRA_INCLUDE_DIRECTORIES}
