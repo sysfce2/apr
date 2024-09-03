@@ -47,7 +47,6 @@ ELSE()
     OPTION(APU_HAVE_ODBC     "Build ODBC DBD driver"         OFF)
 ENDIF()
 
-SET(apr_name    apr-2)
 SET(apr_libname libapr-2)
 
 IF(NOT APU_USE_EXPAT AND NOT APU_USE_LIBXML2 AND NOT APU_USE_XMLLITE)
@@ -71,23 +70,13 @@ OPTION(APU_HAVE_ICONV       "Xlate support"                OFF)
 OPTION(APR_HAVE_IPV6        "IPv6 support"                 ON)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"  ON)
 OPTION(APR_BUILD_TESTAPR    "Build the test suite"         ON)
-OPTION(APR_BUILD_SHARED     "Build shared libraries"       ON)
-OPTION(APR_BUILD_STATIC     "Build static libraries"       ON)
+OPTION(BUILD_SHARED_LIBS    "Build using shared libraries" ON)
 OPTION(APR_MODULAR_DSO      "Use DSO build of modular components" ON)
 OPTION(APR_POOL_DEBUG       "Turn on pools debugging"      OFF)
-OPTION(TEST_STATIC_LIBS     "Test programs use APR static libraries instead of shared libraries?" OFF)
 
 SET(APR_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install subdirectory for binary files")
 SET(APR_INSTALL_LIB_DIR      "lib"                       CACHE STRING "Install subdirectory for library files")
 SET(APR_INSTALL_INCLUDE_DIR  "include/apr-2"             CACHE STRING "Install subdirectory for include files")
-
-IF(NOT APR_BUILD_SHARED AND NOT APR_BUILD_STATIC)
-  MESSAGE(FATAL_ERROR "Both APR_BUILD_SHARED and APR_BUILD_STATIC have been disabled")
-ENDIF()
-
-IF(NOT APR_BUILD_STATIC AND TEST_STATIC_LIBS)
-  MESSAGE(FATAL_ERROR "APR_BUILD_STATIC has been disabled, but TEST_STATIC_LIBS is enabled")
-ENDIF()
 
 IF(NOT APU_USE_EXPAT AND NOT APU_USE_LIBXML2 AND NOT APU_USE_XMLLITE)
   MESSAGE(FATAL_ERROR "Either Expat or LibXml2 or XmlLite must be selected")
@@ -96,8 +85,8 @@ IF(APU_USE_EXPAT AND APU_USE_LIBXML2)
   MESSAGE(FATAL_ERROR "Only one of Expat and LibXml2 can be selected")
 ENDIF()
 
-IF(APR_MODULAR_DSO AND NOT APR_BUILD_SHARED)
-  MESSAGE(FATAL_ERROR "APR_MODULAR_DSO requires APR_BUILD_SHARED.")
+IF(APR_MODULAR_DSO AND NOT BUILD_SHARED_LIBS)
+  MESSAGE(FATAL_ERROR "APR_MODULAR_DSO requires shared libraries build option enabled.")
 ENDIF()
 
 IF(APU_HAVE_CRYPTO)
@@ -537,8 +526,7 @@ IF(NOT APR_MODULAR_DSO AND APU_HAVE_SQLITE3)
   LIST(APPEND APR_EXTRA_INCLUDE_DIRECTORIES "${SQLite3_INCLUDE_DIRS}")
 ENDIF()
 
-# libapr-2 is shared, apr-2 is static
-IF (APR_BUILD_SHARED)
+IF (BUILD_SHARED_LIBS)
   ADD_LIBRARY(${apr_libname} SHARED ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libapr.rc)
   LIST(APPEND install_targets ${apr_libname})
   LIST(APPEND install_bin_pdb ${PROJECT_BINARY_DIR}/${apr_libname}.pdb)
@@ -552,39 +540,34 @@ IF (APR_BUILD_SHARED)
     INTERFACE $<INSTALL_INTERFACE:${APR_INSTALL_INCLUDE_DIR}> ${APR_INCLUDE_DIRECTORIES}
   )
   ADD_DEPENDENCIES(${apr_libname} test_char_header)
-ENDIF()
-
-IF (APR_BUILD_STATIC)
-  ADD_LIBRARY(${apr_name} STATIC ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
-  LIST(APPEND install_targets ${apr_name})
+ELSE()
+  ADD_LIBRARY(${apr_libname} STATIC ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
+  LIST(APPEND install_targets ${apr_libname})
   # no .pdb file generated for static libraries
-  TARGET_LINK_LIBRARIES(${apr_name}
+  TARGET_LINK_LIBRARIES(${apr_libname}
                         PRIVATE ${XMLLIB_LIBRARIES} ${XLATE_LIBRARIES} ${APR_SYSTEM_LIBS} ${APR_EXTRA_LIBRARIES})
-  TARGET_COMPILE_DEFINITIONS(${apr_name}
+  TARGET_COMPILE_DEFINITIONS(${apr_libname}
                              PRIVATE "APR_DECLARE_STATIC;APR_HAVE_MODULAR_DSO=${apr_have_modular_dso_10}"
                              INTERFACE "APR_DECLARE_STATIC")
-  TARGET_INCLUDE_DIRECTORIES(${apr_name}
+  TARGET_INCLUDE_DIRECTORIES(${apr_libname}
     PRIVATE ${APR_INCLUDE_DIRECTORIES} ${XMLLIB_INCLUDE_DIR} ${XLATE_INCLUDE_DIR} ${APR_EXTRA_INCLUDE_DIRECTORIES}
     INTERFACE $<INSTALL_INTERFACE:${APR_INSTALL_INCLUDE_DIR}> ${APR_INCLUDE_DIRECTORIES}
   )
-  ADD_DEPENDENCIES(${apr_name} test_char_header)
+  ADD_DEPENDENCIES(${apr_libname} test_char_header)
 ENDIF()
 
-# libaprapp-2 and aprapp-2 are static
-IF (APR_BUILD_SHARED)
+IF (BUILD_SHARED_LIBS)
   ADD_LIBRARY(libaprapp-2 STATIC misc/win32/apr_app.c misc/win32/internal.c ${APR_PUBLIC_HEADERS_GENERATED})
   LIST(APPEND install_targets libaprapp-2)
   SET_TARGET_PROPERTIES(libaprapp-2 PROPERTIES COMPILE_DEFINITIONS APR_APP)
   TARGET_INCLUDE_DIRECTORIES(libaprapp-2
     PRIVATE ${APR_INCLUDE_DIRECTORIES}
   )
-ENDIF()
-
-IF (APR_BUILD_STATIC)
-  ADD_LIBRARY(aprapp-2 STATIC misc/win32/apr_app.c misc/win32/internal.c ${APR_PUBLIC_HEADERS_GENERATED})
-  LIST(APPEND install_targets aprapp-2)
-  SET_TARGET_PROPERTIES(aprapp-2 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC;APR_APP")
-  TARGET_INCLUDE_DIRECTORIES(aprapp-2
+ELSE()
+  ADD_LIBRARY(libaprapp-2 STATIC misc/win32/apr_app.c misc/win32/internal.c ${APR_PUBLIC_HEADERS_GENERATED})
+  LIST(APPEND install_targets libaprapp-2)
+  SET_TARGET_PROPERTIES(libaprapp-2 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC;APR_APP")
+  TARGET_INCLUDE_DIRECTORIES(libaprapp-2
     PRIVATE ${APR_INCLUDE_DIRECTORIES}
   )
 ENDIF()
@@ -646,16 +629,8 @@ IF(APR_BUILD_TESTAPR)
                   ${PROJECT_SOURCE_DIR}/test/data/mmap_large_datafile.txt
                   ${PROJECT_BINARY_DIR}/data/mmap_large_datafile.txt)
 
-  IF(TEST_STATIC_LIBS)
-    SET(whichapr    ${apr_name})
-    SET(whichaprapp aprapp-2)
-  ELSE()
-    SET(whichapr    ${apr_libname})
-    SET(whichaprapp libaprapp-2)
-  ENDIF()
-
   ADD_EXECUTABLE(testapp test/testapp.c)
-  TARGET_LINK_LIBRARIES(testapp ${whichapr} ${whichaprapp})
+  TARGET_LINK_LIBRARIES(testapp ${apr_libname} libaprapp-2)
   SET_TARGET_PROPERTIES(testapp PROPERTIES LINK_FLAGS /entry:wmainCRTStartup)
   ADD_TEST(NAME testapp COMMAND testapp)
 
@@ -672,7 +647,7 @@ IF(APR_BUILD_TESTAPR)
   ENDFOREACH()
 
   ADD_EXECUTABLE(testall ${APR_TEST_SOURCES})
-  TARGET_LINK_LIBRARIES(testall ${whichapr} ws2_32.lib)
+  TARGET_LINK_LIBRARIES(testall ${apr_libname} ws2_32.lib)
   SET_TARGET_PROPERTIES(testall PROPERTIES COMPILE_DEFINITIONS "BINPATH=$<TARGET_FILE_DIR:testall>")
 
   FOREACH(test ${APR_TEST_SUITES})
@@ -680,7 +655,7 @@ IF(APR_BUILD_TESTAPR)
   ENDFOREACH()
 
   ADD_LIBRARY(mod_test MODULE test/mod_test.c)
-  TARGET_LINK_LIBRARIES(mod_test ${whichapr})
+  TARGET_LINK_LIBRARIES(mod_test ${apr_libname})
   SET_PROPERTY(TARGET mod_test APPEND PROPERTY LINK_FLAGS /export:print_hello)
   # nasty work-around for difficulties adding more than one additional flag
   # (they get joined in a bad way behind the scenes)
@@ -713,7 +688,7 @@ IF(APR_BUILD_TESTAPR)
   FOREACH(sourcefile ${single_source_programs})
     STRING(REGEX REPLACE ".*/([^\\]+)\\.c" "\\1" proggie ${sourcefile})
     ADD_EXECUTABLE(${proggie} ${sourcefile})
-    TARGET_LINK_LIBRARIES(${proggie} ${whichapr})
+    TARGET_LINK_LIBRARIES(${proggie} ${apr_libname})
     SET_TARGET_PROPERTIES(${proggie} PROPERTIES COMPILE_DEFINITIONS "BINPATH=$<TARGET_FILE_DIR:${proggie}>")
 
     ADD_DEPENDENCIES(testall ${proggie})
@@ -817,12 +792,6 @@ MESSAGE(STATUS "  Have Iconv ...................... : ${APU_HAVE_ICONV}")
 MESSAGE(STATUS "  Library files for XML ........... : ${XMLLIB_LIBRARIES}")
 MESSAGE(STATUS "  DSO build of modular components.. : ${APR_MODULAR_DSO}")
 MESSAGE(STATUS "  Turn on pools debugging ..........: ${APR_POOL_DEBUG}")
-MESSAGE(STATUS "  Build shared libs ............... : ${APR_BUILD_SHARED}")
-MESSAGE(STATUS "  Build static libs ............... : ${APR_BUILD_STATIC}")
+MESSAGE(STATUS "  Build shared libraries .......... : ${BUILD_SHARED_LIBS}")
 MESSAGE(STATUS "  Build test suite ................ : ${APR_BUILD_TESTAPR}")
-IF(TEST_STATIC_LIBS)
-MESSAGE(STATUS "    (testing static libraries)")
-ELSE()
-MESSAGE(STATUS "    (testing dynamic libraries)")
-ENDIF()
 MESSAGE(STATUS "  Install private .h for httpd .... : ${APR_INSTALL_PRIVATE_H}")
