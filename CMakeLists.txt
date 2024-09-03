@@ -21,6 +21,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 PROJECT(APR C)
 
+INCLUDE(CMakeDependentOption)
+
 # Enable support for MSVC runtime library selection by abstraction
 # if supported by CMake.
 IF(POLICY CMP0091)
@@ -71,7 +73,7 @@ OPTION(APR_HAVE_IPV6        "IPv6 support"                 ON)
 OPTION(INSTALL_PDB          "Install .pdb files (if generated)"  ON)
 OPTION(APR_BUILD_TESTAPR    "Build the test suite"         ON)
 OPTION(BUILD_SHARED_LIBS    "Build using shared libraries" ON)
-OPTION(APR_MODULAR_DSO      "Use DSO build of modular components" ON)
+CMAKE_DEPENDENT_OPTION(APR_MODULAR_DSO "Use DSO build of modular components" ON "BUILD_SHARED_LIBS" OFF)
 OPTION(APR_POOL_DEBUG       "Turn on pools debugging"      OFF)
 
 SET(APR_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install subdirectory for binary files")
