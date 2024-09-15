@@ -125,6 +125,7 @@ jobs:
 
     steps:
     - name: Install dependencies
+      if: ${{ matrix.packages != '' }
       run: vcpkg install --triplet ${{ matrix.triplet }} ${{ matrix.packages }}
 
     - uses: actions/checkout@v4
