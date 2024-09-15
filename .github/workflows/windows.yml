@@ -18,6 +18,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: ON
             dso-build: ON
             packages: expat
@@ -27,6 +28,7 @@ jobs:
             arch: x86
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: ON
             dso-build: ON
             packages: expat
@@ -36,6 +38,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: ON
             dso-build: ON
             packages: libxml2
@@ -49,6 +52,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: ON
             dso-build: ON
             packages: libxml2
@@ -62,6 +66,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: ON
             dso-build: OFF
             packages: expat
@@ -71,6 +76,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: ON
             dso-build: OFF
             packages: expat
@@ -84,6 +90,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: ON
             dso-build: OFF
             packages: expat sqlite3 openssl libiconv
@@ -98,6 +105,7 @@ jobs:
             arch: x64
             build-type: Debug
             generator: "Visual Studio 17 2022"
+            toolset: "v143"
             build-shared: OFF
             dso-build: OFF
             packages: expat
