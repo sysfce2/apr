@@ -118,6 +118,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+    - name: Install dependencies
+      run: vcpkg install --triplet ${{ matrix.triplet }} ${{ matrix.packages }}
+
     - uses: actions/checkout@v4
 
     - name: Configure CMake
