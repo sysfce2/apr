@@ -650,7 +650,7 @@ typedef int apr_wait_t;
  *          are supported.  The driver builds enable
  *          these flags individually.
  */
-#define APU_HAVE_PGSQL          0
+#cmakedefine01 APU_HAVE_PGSQL
 #define APU_HAVE_MYSQL          0
 #cmakedefine01 APU_HAVE_SQLITE3
 #define APU_HAVE_SQLITE2        0

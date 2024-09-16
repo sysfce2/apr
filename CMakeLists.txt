@@ -51,6 +51,7 @@ OPTION(APU_USE_LIBXML2      "Use LibXml2"                  OFF)
 OPTION(APU_USE_XMLLITE      "Use XmlLite"                  ON)
 OPTION(APR_INSTALL_PRIVATE_H  "Install selected private .h files (for httpd)"  OFF)
 OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"     OFF)
+OPTION(APU_HAVE_PGSQL       "Build PostgreSQL DBD driver"  OFF)
 OPTION(APU_HAVE_CRYPTO      "Crypto support"               OFF)
 OPTION(APU_HAVE_ICONV       "Xlate support"                OFF)
 OPTION(APR_HAVE_IPV6        "IPv6 support"                 ON)
@@ -93,6 +94,10 @@ ENDIF()
 
 IF(APU_HAVE_SQLITE3)
   FIND_PACKAGE(SQLite3 REQUIRED)
+ENDIF()
+
+IF(APU_HAVE_PGSQL)
+  FIND_PACKAGE(PostgreSQL REQUIRED)
 ENDIF()
 
 IF(APR_POOL_DEBUG)
@@ -542,6 +547,16 @@ IF(APU_HAVE_SQLITE3)
   )
 ENDIF()
 
+IF(APU_HAVE_PGSQL)
+  LIST(APPEND dbd_drivers pgsql)
+
+  ADD_APR_MODULE(apr_dbd_pgsql-2 "apr_dbd_pgsql"
+                 "dbd/apr_dbd_pgsql.c"
+                 "PostgreSQL::PostgreSQL")
+
+  ADD_COMPILE_DEFINITIONS(HAVE_LIBPQ_FE_H)
+ENDIF()
+
 IF (BUILD_SHARED_LIBS)
   ADD_LIBRARY(${apr_libname} SHARED ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libapr.rc)
   LIST(APPEND install_targets ${apr_libname})
@@ -765,6 +780,7 @@ MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
 MESSAGE(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")
 MESSAGE(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
 MESSAGE(STATUS "  DBD SQLite3 driver .............. : ${APU_HAVE_SQLITE3}")
+MESSAGE(STATUS "  DBD PostgreSQL .................. : ${APU_HAVE_PGSQL}")
 MESSAGE(STATUS "  Use Expat ....................... : ${APU_USE_EXPAT}")
 MESSAGE(STATUS "  Use LibXml2 ..................... : ${APU_USE_LIBXML2}")
 MESSAGE(STATUS "  Use XmlLite ..................... : ${APU_USE_XMLLITE}")

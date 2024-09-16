@@ -58,6 +58,8 @@ How to build
                               Default: ON
        APU_HAVE_SQLITE3       Build SQLite3 DBD driver
                               Default: OFF
+       APU_HAVE_PGSQL         Build PostgreSQL DBD driver
+                              Default: OFF
        APR_HAVE_IPV6          Enable IPv6 support
                               Default: ON
        APR_BUILD_TESTAPR      Build APR test suite
@@ -115,7 +117,6 @@ Known Bugs and Limitations
     . APU_HAVE_NDBM
     . APU_HAVE_DB
   + DBD:
-    . APU_HAVE_PGSQL
     . APU_HAVE_MYSQL
     . APU_HAVE_SQLITE2
     . APU_HAVE_ORACLE
