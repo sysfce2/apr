@@ -87,7 +87,7 @@ jobs:
               -DAPU_HAVE_ODBC=OFF
               -DAPU_HAVE_SQLITE3=OFF
               -DAPU_HAVE_CRYPTO=OFF
-          - name: "Shared: All (ODBC + Sqlite3 + Crypto + Iconv)"
+          - name: "Shared: All (ODBC + Sqlite3 + PostgreSQL + Crypto + Iconv)"
             os: windows-latest
             triplet: x64-windows
             arch: x64
@@ -95,13 +95,14 @@ jobs:
             generator: Ninja
             build-shared: ON
             dso-build: ON
-            packages: sqlite3 openssl libiconv
+            packages: sqlite3 openssl libiconv libpq[core]
             config: >-
               -DAPU_HAVE_ODBC=ON
               -DAPU_HAVE_SQLITE3=ON
+              -DAPU_HAVE_PGSQL=ON
               -DAPU_HAVE_CRYPTO=ON
               -DAPU_HAVE_ICONV=ON
-          - name: "Static: All (ODBC + Sqlite3 + Crypto + Iconv)"
+          - name: "Static: All (ODBC + Sqlite3 + PostgreSQL + Crypto + Iconv)"
             os: windows-latest
             triplet: x64-windows-static
             arch: x64
@@ -109,10 +110,11 @@ jobs:
             generator: Ninja
             build-shared: OFF
             dso-build: OFF
-            packages: sqlite3 openssl libiconv
+            packages: sqlite3 openssl libiconv libpq[core]
             config: >-
               -DAPU_HAVE_ODBC=ON
               -DAPU_HAVE_SQLITE3=ON
+              -DAPU_HAVE_PGSQL=ON
               -DAPU_HAVE_CRYPTO=ON
               -DAPU_HAVE_ICONV=ON
       fail-fast: false
