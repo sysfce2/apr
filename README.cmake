@@ -69,21 +69,8 @@ How to build
                               Default: ON
        APR_POOL_DEBUG         Turn on pools debugging
                               Default: OFF
-       TEST_STATIC_LIBS       Build the test suite to test the APR static
-                              library instead of the APR dynamic library.
-                              Default: OFF
-                              In order to build the test suite against both
-                              static and dynamic libraries, separate builds
-                              will be required, one with TEST_STATIC_LIBS
-                              set to ON.
        INSTALL_PDB            Install .pdb files if generated.
                               Default: ON
-
-   LIBXML2_ICONV_INCLUDE_DIR, LIBXML2_ICONV_LIBRARIES
-
-       If using libxml2 for the XML implementation and the build of libxml2
-       requires iconv, set these variables to allow iconv includes
-       and libraries to be found.
 
    CMAKE_C_FLAGS_RELEASE, _DEBUG, _RELWITHDEBINFO, _MINSIZEREL
 
@@ -123,8 +110,6 @@ Known Bugs and Limitations
   + CRYPTO:
     . APU_HAVE_NSS
   + APU_HAVE_ICONV
-* XML implementation (i.e., Expat or libxml2) could support static XML impl
-  with apr-2.lib.
 
 Generally:
 
