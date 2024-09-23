@@ -230,6 +230,76 @@ static void test_proc_args(abts_case* tc, void* data)
     ABTS_STR_EQUAL(tc, expected, actual);
 }
 
+static void test_proc_args_winbatch(abts_case* tc, void* data)
+{
+    const char* args[10];
+    apr_procattr_t* attr;
+    apr_status_t rv;
+    char *progname;
+    const char *expected;
+    const char *actual;
+
+    apr_filepath_merge(&progname, NULL, "echoargs.bat", 0, p);
+
+    rv = apr_procattr_create(&attr, p);
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+
+    rv = apr_procattr_io_set(attr, APR_NO_PIPE, APR_FULL_BLOCK, APR_NO_PIPE);
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+
+    rv = apr_procattr_cmdtype_set(attr, APR_PROGRAM_ENV);
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+
+    args[0] = progname;
+    args[1] = "arg1";
+    args[2] = "arg2";
+    args[3] = "arg3";
+    args[4] = "arg4";
+    args[5] = "arg5";
+    args[6] = "arg6";
+    args[7] = "arg7";
+    args[8] = "arg8";
+    args[9] = NULL;
+
+    rv = apr_proc_create(&newproc, progname, args, NULL, attr, p);
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+
+    actual = "";
+    while (1)
+    {
+        char buf[1024];
+        apr_size_t length = sizeof(buf);
+
+        rv = apr_file_read(newproc.out, buf, &length);
+        if (APR_STATUS_IS_EOF(rv)) {
+            break;
+        }
+        else if (rv != APR_SUCCESS)
+        {
+            ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+            break;
+        }
+
+        buf[length] = 0;
+        actual = apr_pstrcat(p, actual, buf, NULL);
+    }
+
+    abts_log_message("Invoked command line: %s\n", newproc.invoked);
+
+    expected =
+        "1: [arg1]" "\r\n"
+        "2: [arg2]" "\r\n"
+        "3: [arg3]" "\r\n"
+        "4: [arg4]" "\r\n"
+        "5: [arg5]" "\r\n"
+        "6: [arg6]" "\r\n"
+        "7: [arg7]" "\r\n"
+        "8: [arg8]" "\r\n"
+        "9: []" "\r\n";
+
+    ABTS_STR_EQUAL(tc, expected, actual);
+}
+
 abts_suite *testproc(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
@@ -239,6 +309,9 @@ abts_suite *testproc(abts_suite *suite)
     abts_run_test(suite, test_proc_wait, NULL);
     abts_run_test(suite, test_file_redir, NULL);
     abts_run_test(suite, test_proc_args, NULL);
+#ifdef WIN32
+    abts_run_test(suite, test_proc_args_winbatch, NULL);
+#endif
 
     return suite;
 }

@@ -605,6 +605,10 @@ IF(APR_BUILD_TESTAPR)
                   ${PROJECT_SOURCE_DIR}/test/data/mmap_large_datafile.txt
                   ${PROJECT_BINARY_DIR}/data/mmap_large_datafile.txt)
 
+  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                  ${PROJECT_SOURCE_DIR}/test/echoargs.bat
+                  ${PROJECT_BINARY_DIR}/echoargs.bat)
+
   ADD_EXECUTABLE(testapp test/testapp.c)
   TARGET_LINK_LIBRARIES(testapp ${apr_libname} libaprapp-2)
   SET_TARGET_PROPERTIES(testapp PROPERTIES LINK_FLAGS /entry:wmainCRTStartup)
