@@ -110,20 +110,6 @@ ELSE()
   ADD_COMPILE_DEFINITIONS(APR_HAVE_MODULAR_DSO=0)
 ENDIF()
 
-# create 1-or-0 representation of feature tests for apr.h
-
-SET(apu_use_libxml2_10 0)
-SET(apu_use_expat_10 0)
-SET(apu_use_xmllite_10 0)
-
-IF(APU_USE_EXPAT)
-  SET(apu_use_expat_10 1)
-ELSEIF(APU_USE_LIBXML2)
-  SET(apu_use_libxml2_10 1)
-ELSE(APU_USE_XMLLITE)
-  SET(apu_use_xmllite_10 1)
-ENDIF()
-
 # Read current version.
 FILE(STRINGS include/apr_version.h VERSION_STRINGS REGEX "#define (APR_MAJOR_VERSION|APR_MINOR_VERSION|APR_PATCH_VERSION)")
 
