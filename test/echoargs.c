@@ -37,8 +37,7 @@ int main(int argc, const char * const *argv, const char* const* env)
     apr_file_open_stdout(&file, pool);
     for (i = 1; i < argc; i++)
     {
-        if (i > 1) apr_file_puts(",", file);
-        apr_file_puts(argv[i], file);
+        apr_file_printf(file, "%d: [%s]\n", i, argv[i]);
     }
 
     apr_terminate();

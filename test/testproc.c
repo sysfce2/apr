@@ -217,14 +217,16 @@ static void test_proc_args(abts_case* tc, void* data)
         actual = apr_pstrcat(p, actual, buf, NULL);
     }
 
-    expected = "1" ","
-               "" ","
-               "\"te st" ","
-               " a\\b" ","
-               " a\\\\b" ","
-               " \\" ","
-               "new\nline" ","
-               " \\\\";
+    expected =
+        "1: [1]" "\n"
+        "2: []" "\n"
+        "3: [\"te st]" "\n"
+        "4: [ a\\b]" "\n"
+        "5: [ a\\\\b]" "\n"
+        "6: [ \\]" "\n"
+        "7: [new\nline]" "\n"
+        "8: [ \\\\]" "\n";
+
     ABTS_STR_EQUAL(tc, expected, actual);
 }
 
