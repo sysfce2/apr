@@ -300,6 +300,34 @@ static void test_proc_args_winbatch(abts_case* tc, void* data)
     ABTS_STR_EQUAL(tc, expected, actual);
 }
 
+#ifdef WIN32
+static void test_proc_unclosed_quote1(abts_case *tc, void *data)
+{
+    apr_procattr_t *attr;
+    apr_status_t rv;
+    const char *args[] = { NULL };
+
+    rv = apr_procattr_create(&attr, p);
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+
+    rv = apr_proc_create(&newproc, "\"", args, NULL, attr, p);
+    ABTS_INT_EQUAL(tc, APR_EINVAL, rv);
+}
+
+static void test_proc_unclosed_quote2(abts_case *tc, void *data)
+{
+    apr_procattr_t *attr;
+    apr_status_t rv;
+    const char *args[] = { NULL };
+
+    rv = apr_procattr_create(&attr, p);
+    ABTS_INT_EQUAL(tc, APR_SUCCESS, rv);
+
+    rv = apr_proc_create(&newproc, "\"abc", args, NULL, attr, p);
+    ABTS_INT_EQUAL(tc, APR_EINVAL, rv);
+}
+#endif
+
 abts_suite *testproc(abts_suite *suite)
 {
     suite = ADD_SUITE(suite)
@@ -311,6 +339,8 @@ abts_suite *testproc(abts_suite *suite)
     abts_run_test(suite, test_proc_args, NULL);
 #ifdef WIN32
     abts_run_test(suite, test_proc_args_winbatch, NULL);
+    abts_run_test(suite, test_proc_unclosed_quote1, NULL);
+    abts_run_test(suite, test_proc_unclosed_quote2, NULL);
 #endif
 
     return suite;

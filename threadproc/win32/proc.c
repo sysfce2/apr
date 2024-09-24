@@ -509,7 +509,16 @@ APR_DECLARE(apr_status_t) apr_proc_create(apr_proc_t *new,
      * XXX progname must be NULL if this is a 16 bit app running in WOW
      */
     if (progname[0] == '\"') {
-        progname = apr_pstrmemdup(pool, progname + 1, strlen(progname) - 2);
+        size_t progname_len = strlen(progname);
+        if (progname_len < 2) {
+            return APR_EINVAL;
+        }
+
+        if (progname[progname_len - 1] != '\"') {
+            return APR_EINVAL;
+        }
+
+        progname = apr_pstrmemdup(pool, progname + 1, progname_len - 2);
     }
 
     if (attr->cmdtype == APR_PROGRAM || attr->cmdtype == APR_PROGRAM_ENV) {
