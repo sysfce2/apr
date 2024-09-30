@@ -17,146 +17,146 @@
 
 # CMAKE_MINIMUM_REQUIRED should be the first directive in the file:
 # https://cmake.org/cmake/help/latest/command/cmake_minimum_required.html
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+cmake_minimum_required(VERSION 3.5)
 
-PROJECT(APR C)
+project(APR C)
 
-INCLUDE(CMakeDependentOption)
+include(CMakeDependentOption)
 
 # Enable support for MSVC runtime library selection by abstraction
 # if supported by CMake.
-IF(POLICY CMP0091)
-  CMAKE_POLICY(SET CMP0091 NEW)
-ENDIF()
+if(POLICY CMP0091)
+  cmake_policy(SET CMP0091 NEW)
+endif()
 
 # Add simple support CMAKE_WARNING_AS_ERROR if CMake doesn't
 # support it.
-IF (CMAKE_VERSION VERSION_LESS 3.24)
-  IF(CMAKE_WARNING_AS_ERROR AND MSVC)
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
-  ENDIF()
-ENDIF()
+if(CMAKE_VERSION VERSION_LESS 3.24)
+  if(CMAKE_WARNING_AS_ERROR AND MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
+  endif()
+endif()
 
-OPTION(APR_MINIMAL_BUILD    "Create minimal APR build"       OFF)
-IF(NOT APR_MINIMAL_BUILD)
-    OPTION(APU_HAVE_ODBC     "Build ODBC DBD driver"         ON)
-ELSE()
-    OPTION(APU_HAVE_ODBC     "Build ODBC DBD driver"         OFF)
-ENDIF()
+option(APR_MINIMAL_BUILD    "Create minimal APR build"       OFF)
+if(NOT APR_MINIMAL_BUILD)
+    option(APU_HAVE_ODBC     "Build ODBC DBD driver"         ON)
+else()
+    option(APU_HAVE_ODBC     "Build ODBC DBD driver"         OFF)
+endif()
 
-SET(apr_libname libapr-2)
+set(apr_libname libapr-2)
 
-SET(APR_XML_BACKEND "xmllite" CACHE STRING "XML library to use (expat|libxml|xmllite)")
-SET_PROPERTY(CACHE APR_XML_BACKEND PROPERTY STRINGS expat libxml2 xmllite)
+set(APR_XML_BACKEND "xmllite" CACHE STRING "XML library to use (expat|libxml|xmllite)")
+set_property(CACHE APR_XML_BACKEND PROPERTY STRINGS expat libxml2 xmllite)
 
-OPTION(APR_INSTALL_PRIVATE_H  "Install selected private .h files (for httpd)"  OFF)
-OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"     OFF)
-OPTION(APU_HAVE_PGSQL       "Build PostgreSQL DBD driver"  OFF)
-OPTION(APU_HAVE_CRYPTO      "Crypto support"               OFF)
-OPTION(APU_HAVE_ICONV       "Xlate support"                OFF)
-OPTION(APR_HAVE_IPV6        "IPv6 support"                 ON)
-OPTION(INSTALL_PDB          "Install .pdb files (if generated)"  ON)
-OPTION(APR_BUILD_TESTAPR    "Build the test suite"         ON)
-OPTION(BUILD_SHARED_LIBS    "Build using shared libraries" ON)
-CMAKE_DEPENDENT_OPTION(APR_MODULAR_DSO "Use DSO build of modular components" ON "BUILD_SHARED_LIBS" OFF)
-OPTION(APR_POOL_DEBUG       "Turn on pools debugging"      OFF)
+option(APR_INSTALL_PRIVATE_H  "Install selected private .h files (for httpd)"  OFF)
+option(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"     OFF)
+option(APU_HAVE_PGSQL       "Build PostgreSQL DBD driver"  OFF)
+option(APU_HAVE_CRYPTO      "Crypto support"               OFF)
+option(APU_HAVE_ICONV       "Xlate support"                OFF)
+option(APR_HAVE_IPV6        "IPv6 support"                 ON)
+option(INSTALL_PDB          "Install .pdb files (if generated)"  ON)
+option(APR_BUILD_TESTAPR    "Build the test suite"         ON)
+option(BUILD_SHARED_LIBS    "Build using shared libraries" ON)
+cmake_dependent_option(APR_MODULAR_DSO "Use DSO build of modular components" ON "BUILD_SHARED_LIBS" OFF)
+option(APR_POOL_DEBUG       "Turn on pools debugging"      OFF)
 
-SET(APR_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install subdirectory for binary files")
-SET(APR_INSTALL_LIB_DIR      "lib"                       CACHE STRING "Install subdirectory for library files")
-SET(APR_INSTALL_INCLUDE_DIR  "include/apr-2"             CACHE STRING "Install subdirectory for include files")
+set(APR_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install subdirectory for binary files")
+set(APR_INSTALL_LIB_DIR      "lib"                       CACHE STRING "Install subdirectory for library files")
+set(APR_INSTALL_INCLUDE_DIR  "include/apr-2"             CACHE STRING "Install subdirectory for include files")
 
-IF(APU_USE_EXPAT)
-  MESSAGE(FATAL_ERROR "APU_USE_EXPAT option is not supported. Use APR_XML_BACKEND.")
-ENDIF()
+if(APU_USE_EXPAT)
+  message(FATAL_ERROR "APU_USE_EXPAT option is not supported. Use APR_XML_BACKEND.")
+endif()
 
-IF(APU_USE_LIBXML2)
-  MESSAGE(FATAL_ERROR "APU_USE_LIBXML2 option is not supported. Use APR_XML_BACKEND.")
-ENDIF()
+if(APU_USE_LIBXML2)
+  message(FATAL_ERROR "APU_USE_LIBXML2 option is not supported. Use APR_XML_BACKEND.")
+endif()
 
-IF(APU_USE_XMLLITE)
-  MESSAGE(FATAL_ERROR "APU_USE_XMLLITE option is not supported. Use APR_XML_BACKEND.")
-ENDIF()
+if(APU_USE_XMLLITE)
+  message(FATAL_ERROR "APU_USE_XMLLITE option is not supported. Use APR_XML_BACKEND.")
+endif()
 
-IF(APR_MODULAR_DSO AND NOT BUILD_SHARED_LIBS)
-  MESSAGE(FATAL_ERROR "APR_MODULAR_DSO requires shared libraries build option enabled.")
-ENDIF()
+if(APR_MODULAR_DSO AND NOT BUILD_SHARED_LIBS)
+  message(FATAL_ERROR "APR_MODULAR_DSO requires shared libraries build option enabled.")
+endif()
 
-IF(APU_HAVE_CRYPTO)
-  FIND_PACKAGE(OpenSSL REQUIRED)
-ENDIF()
+if(APU_HAVE_CRYPTO)
+  find_package(OpenSSL REQUIRED)
+endif()
 
-IF (APR_XML_BACKEND STREQUAL "expat")
-  FIND_PACKAGE(expat CONFIG REQUIRED)
-  SET(XMLLIB_LIBRARIES   expat::expat)
-  SET(APU_USE_EXPAT ON)
-ELSEIF (APR_XML_BACKEND STREQUAL "libxml2")
-  FIND_PACKAGE(LibXml2 REQUIRED)
-  SET(XMLLIB_LIBRARIES   LibXml2::LibXml2)
-  SET(APU_USE_LIBXML2 ON)
-ELSEIF (APR_XML_BACKEND STREQUAL "xmllite")
-  SET(XMLLIB_LIBRARIES   "xmllite.lib")
-  SET(APU_USE_XMLLITE ON)
-ELSE()
-  MESSAGE(FATAL_ERROR "Unsupported APR_XML_BACKEND value (${APR_XML_BACKEND}).")
-ENDIF()
+if(APR_XML_BACKEND STREQUAL "expat")
+  find_package(expat CONFIG REQUIRED)
+  set(XMLLIB_LIBRARIES   expat::expat)
+  set(APU_USE_EXPAT ON)
+elseif(APR_XML_BACKEND STREQUAL "libxml2")
+  find_package(LibXml2 REQUIRED)
+  set(XMLLIB_LIBRARIES   LibXml2::LibXml2)
+  set(APU_USE_LIBXML2 ON)
+elseif(APR_XML_BACKEND STREQUAL "xmllite")
+  set(XMLLIB_LIBRARIES   "xmllite.lib")
+  set(APU_USE_XMLLITE ON)
+else()
+  message(FATAL_ERROR "Unsupported APR_XML_BACKEND value (${APR_XML_BACKEND}).")
+endif()
 
-IF(APU_HAVE_ICONV)
-  FIND_PACKAGE(Iconv REQUIRED)
-ENDIF()
+if(APU_HAVE_ICONV)
+  find_package(Iconv REQUIRED)
+endif()
 
-IF(APU_HAVE_SQLITE3)
-  FIND_PACKAGE(SQLite3 REQUIRED)
-ENDIF()
+if(APU_HAVE_SQLITE3)
+  find_package(SQLite3 REQUIRED)
+endif()
 
-IF(APU_HAVE_PGSQL)
-  FIND_PACKAGE(PostgreSQL REQUIRED)
-ENDIF()
+if(APU_HAVE_PGSQL)
+  find_package(PostgreSQL REQUIRED)
+endif()
 
-IF(APR_POOL_DEBUG)
-  ADD_COMPILE_DEFINITIONS(APR_POOL_DEBUG=1)
-ENDIF()
+if(APR_POOL_DEBUG)
+  add_compile_definitions(APR_POOL_DEBUG=1)
+endif()
 
-IF(APR_MODULAR_DSO)
-  ADD_COMPILE_DEFINITIONS(APR_HAVE_MODULAR_DSO=1)
-ELSE()
-  ADD_COMPILE_DEFINITIONS(APR_HAVE_MODULAR_DSO=0)
-ENDIF()
+if(APR_MODULAR_DSO)
+  add_compile_definitions(APR_HAVE_MODULAR_DSO=1)
+else()
+  add_compile_definitions(APR_HAVE_MODULAR_DSO=0)
+endif()
 
 # Read current version.
-FILE(STRINGS include/apr_version.h VERSION_STRINGS REGEX "#define (APR_MAJOR_VERSION|APR_MINOR_VERSION|APR_PATCH_VERSION)")
+file(STRINGS include/apr_version.h VERSION_STRINGS REGEX "#define (APR_MAJOR_VERSION|APR_MINOR_VERSION|APR_PATCH_VERSION)")
 
-STRING(REGEX REPLACE ".*#define APR_MAJOR_VERSION[ \t]+([0-9]+).*" "\\1" APR_MAJOR_VERSION ${VERSION_STRINGS})
-STRING(REGEX REPLACE ".*#define APR_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" APR_MINOR_VERSION ${VERSION_STRINGS})
-STRING(REGEX REPLACE ".*#define APR_PATCH_VERSION[ \t]+([0-9]+).*" "\\1" APR_PATCH_VERSION ${VERSION_STRINGS})
+string(REGEX REPLACE ".*#define APR_MAJOR_VERSION[ \t]+([0-9]+).*" "\\1" APR_MAJOR_VERSION ${VERSION_STRINGS})
+string(REGEX REPLACE ".*#define APR_MINOR_VERSION[ \t]+([0-9]+).*" "\\1" APR_MINOR_VERSION ${VERSION_STRINGS})
+string(REGEX REPLACE ".*#define APR_PATCH_VERSION[ \t]+([0-9]+).*" "\\1" APR_PATCH_VERSION ${VERSION_STRINGS})
 
-CONFIGURE_FILE(include/apr.hwc
+configure_file(include/apr.hwc
                ${PROJECT_BINARY_DIR}/apr.h)
 # "COPYONLY" just because anything else isn't implemented ;)
-CONFIGURE_FILE(include/private/apu_select_dbm.hw
+configure_file(include/private/apu_select_dbm.hw
                ${PROJECT_BINARY_DIR}/apu_select_dbm.h
                COPYONLY)
-CONFIGURE_FILE(include/apu_want.hw
+configure_file(include/apu_want.hw
                ${PROJECT_BINARY_DIR}/apu_want.h
                COPYONLY)
 
-ADD_EXECUTABLE(gen_test_char tools/gen_test_char.c)
+add_executable(gen_test_char tools/gen_test_char.c)
 
-ADD_CUSTOM_COMMAND(
+add_custom_command(
   COMMENT "Generating character tables, apr_escape_test_char.h, for current locale"
   DEPENDS gen_test_char
   COMMAND $<TARGET_FILE:gen_test_char> > ${PROJECT_BINARY_DIR}/apr_escape_test_char.h
   OUTPUT ${PROJECT_BINARY_DIR}/apr_escape_test_char.h
 )
-ADD_CUSTOM_TARGET(
+add_custom_target(
   test_char_header ALL
   DEPENDS ${PROJECT_BINARY_DIR}/apr_escape_test_char.h
 )
 
-IF(APU_HAVE_ICONV)
-  SET(XLATE_LIBRARIES    Iconv::Iconv)
-ELSE()
-  SET(XLATE_LIBRARIES   "")
-ENDIF()
+if(APU_HAVE_ICONV)
+  set(XLATE_LIBRARIES    Iconv::Iconv)
+else()
+  set(XLATE_LIBRARIES   "")
+endif()
 # Generated .h files are stored in PROJECT_BINARY_DIR, not the
 # source tree.
 #
@@ -164,7 +164,7 @@ ENDIF()
 #         manually delete apr.h in PROJECT_SOURCE_DIR/include if
 #         you've generated apr.h before using a different build
 
-SET(APR_INCLUDE_DIRECTORIES
+set(APR_INCLUDE_DIRECTORIES
   $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/arch/win32>
@@ -172,13 +172,13 @@ SET(APR_INCLUDE_DIRECTORIES
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/private>
 )
 
-SET(APR_SYSTEM_LIBS
+set(APR_SYSTEM_LIBS
   ws2_32
   rpcrt4
   bcrypt
 )
 
-SET(APR_PUBLIC_HEADERS_STATIC
+set(APR_PUBLIC_HEADERS_STATIC
   include/apr_allocator.h
   include/apr_anylock.h
   include/apr_atomic.h
@@ -252,12 +252,12 @@ SET(APR_PUBLIC_HEADERS_STATIC
   include/apu_errno.h
   include/apu_version.h
 )
-SET(APR_PUBLIC_HEADERS_GENERATED
+set(APR_PUBLIC_HEADERS_GENERATED
   ${PROJECT_BINARY_DIR}/apr.h
   ${PROJECT_BINARY_DIR}/apu_want.h
 )
 
-SET(APR_SOURCES
+set(APR_SOURCES
   atomic/win32/apr_atomic.c
   atomic/win32/apr_atomic64.c
   buckets/apr_brigade.c
@@ -393,10 +393,10 @@ SET(APR_SOURCES
 )
 
 # Sources and libraries for APR builtin drivers. Used when APR_MODULAR_DSO=OFF.
-SET(APR_EXTRA_SOURCES)
-SET(APR_EXTRA_LIBRARIES)
+set(APR_EXTRA_SOURCES)
+set(APR_EXTRA_LIBRARIES)
 
-SET(APR_TEST_SUITES
+set(APR_TEST_SUITES
   testargs
   testatomic
   testbase64
@@ -470,155 +470,155 @@ SET(APR_TEST_SUITES
   testxml
 )
 
-SET(install_targets)
-SET(install_modules)
-SET(install_bin_pdb)
-SET(dbd_drivers)
+set(install_targets)
+set(install_modules)
+set(install_bin_pdb)
+set(dbd_drivers)
 
-IF (MSVC)
+if (MSVC)
   # Ignore Microsoft's interpretation of secure development
   # and the POSIX string handling API
-  ADD_COMPILE_DEFINITIONS(_CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_WARNINGS)
-ENDIF()
+  add_compile_definitions(_CRT_SECURE_NO_DEPRECATE _CRT_NONSTDC_NO_WARNINGS)
+endif()
 
-MACRO(ADD_APR_MODULE name dllname sources libraries)
-  IF(APR_MODULAR_DSO)
-    ADD_LIBRARY(${name} SHARED ${sources})
-    LIST(APPEND install_modules ${name})
-    LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:${name}>)
+macro(ADD_APR_MODULE name dllname sources libraries)
+  if(APR_MODULAR_DSO)
+    add_library(${name} SHARED ${sources})
+    list(APPEND install_modules ${name})
+    list(APPEND install_bin_pdb $<TARGET_PDB_FILE:${name}>)
 
-    TARGET_SOURCES(${name} PRIVATE libapr.rc)
-    TARGET_COMPILE_DEFINITIONS(${name}
+    target_sources(${name} PRIVATE libapr.rc)
+    target_compile_definitions(${name}
                                PRIVATE DLL_NAME=${dllname})
 
-    TARGET_LINK_LIBRARIES(${name}
+    target_link_libraries(${name}
                           PRIVATE ${apr_libname} ${APR_SYSTEM_LIBS})
-    TARGET_LINK_LIBRARIES(${name}
+    target_link_libraries(${name}
                           PRIVATE ${libraries})
-  ELSE()
-    LIST(APPEND APR_EXTRA_SOURCES ${sources})
-    LIST(APPEND APR_EXTRA_LIBRARIES ${libraries})
-  ENDIF()
-ENDMACRO()
+  else()
+    list(APPEND APR_EXTRA_SOURCES ${sources})
+    list(APPEND APR_EXTRA_LIBRARIES ${libraries})
+  endif()
+endmacro()
 
-IF(APU_HAVE_CRYPTO)
-  IF(NOT OPENSSL_FOUND)
-    MESSAGE(FATAL_ERROR "Only OpenSSL-based crypto is currently implemented in the cmake build")
-  ENDIF()
+if(APU_HAVE_CRYPTO)
+  if(NOT OPENSSL_FOUND)
+    message(FATAL_ERROR "Only OpenSSL-based crypto is currently implemented in the cmake build")
+  endif()
 
   ADD_APR_MODULE(
     apr_crypto_openssl-2 "apr_crypto_openssl"
     "crypto/apr_crypto_openssl.c"
     "OpenSSL::Crypto")
-ENDIF()
+endif()
 
-IF(APU_HAVE_ODBC)
-  LIST(APPEND dbd_drivers odbc)
+if(APU_HAVE_ODBC)
+  list(APPEND dbd_drivers odbc)
 
   ADD_APR_MODULE(
     apr_dbd_odbc-2 "apr_dbd_odbc"
     "dbd/apr_dbd_odbc.c"
     "odbc32;odbccp32"
   )
-ENDIF()
+endif()
 
-IF(APU_HAVE_SQLITE3)
-  LIST(APPEND dbd_drivers sqlite3)
+if(APU_HAVE_SQLITE3)
+  list(APPEND dbd_drivers sqlite3)
 
   ADD_APR_MODULE(
     apr_dbd_sqlite3-2 "apr_dbd_sqlite3-1"
     "dbd/apr_dbd_sqlite3.c"
     "SQLite::SQLite3"
   )
-ENDIF()
+endif()
 
-IF(APU_HAVE_PGSQL)
-  LIST(APPEND dbd_drivers pgsql)
+if(APU_HAVE_PGSQL)
+  list(APPEND dbd_drivers pgsql)
 
   ADD_APR_MODULE(apr_dbd_pgsql-2 "apr_dbd_pgsql"
                  "dbd/apr_dbd_pgsql.c"
                  "PostgreSQL::PostgreSQL")
 
-  ADD_COMPILE_DEFINITIONS(HAVE_LIBPQ_FE_H)
-ENDIF()
+  add_compile_definitions(HAVE_LIBPQ_FE_H)
+endif()
 
-IF (BUILD_SHARED_LIBS)
-  ADD_LIBRARY(${apr_libname} SHARED ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libapr.rc)
-  LIST(APPEND install_targets ${apr_libname})
-  LIST(APPEND install_bin_pdb $<TARGET_PDB_FILE:${apr_libname}>)
-  TARGET_LINK_LIBRARIES(${apr_libname}
+if (BUILD_SHARED_LIBS)
+  add_library(${apr_libname} SHARED ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED} libapr.rc)
+  list(APPEND install_targets ${apr_libname})
+  list(APPEND install_bin_pdb $<TARGET_PDB_FILE:${apr_libname}>)
+  target_link_libraries(${apr_libname}
                         PRIVATE ${XMLLIB_LIBRARIES} ${XLATE_LIBRARIES} ${APR_SYSTEM_LIBS} ${APR_EXTRA_LIBRARIES})
-  TARGET_COMPILE_DEFINITIONS(${apr_libname}
+  target_compile_definitions(${apr_libname}
                              PRIVATE "APR_DECLARE_EXPORT"
                              INTERFACE "APR_DECLARE_IMPORT")
-  TARGET_INCLUDE_DIRECTORIES(${apr_libname}
+  target_include_directories(${apr_libname}
     PRIVATE ${APR_INCLUDE_DIRECTORIES}
     INTERFACE $<INSTALL_INTERFACE:${APR_INSTALL_INCLUDE_DIR}> ${APR_INCLUDE_DIRECTORIES}
   )
-  ADD_DEPENDENCIES(${apr_libname} test_char_header)
-ELSE()
-  ADD_LIBRARY(${apr_libname} STATIC ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
-  LIST(APPEND install_targets ${apr_libname})
+  add_dependencies(${apr_libname} test_char_header)
+else()
+  add_library(${apr_libname} STATIC ${APR_SOURCES} ${APR_EXTRA_SOURCES} ${APR_PUBLIC_HEADERS_GENERATED})
+  list(APPEND install_targets ${apr_libname})
   # no .pdb file generated for static libraries
-  TARGET_LINK_LIBRARIES(${apr_libname}
+  target_link_libraries(${apr_libname}
                         PRIVATE ${XMLLIB_LIBRARIES} ${XLATE_LIBRARIES} ${APR_SYSTEM_LIBS} ${APR_EXTRA_LIBRARIES})
-  TARGET_COMPILE_DEFINITIONS(${apr_libname}
+  target_compile_definitions(${apr_libname}
                              PRIVATE "APR_DECLARE_STATIC"
                              INTERFACE "APR_DECLARE_STATIC")
-  TARGET_INCLUDE_DIRECTORIES(${apr_libname}
+  target_include_directories(${apr_libname}
     PRIVATE ${APR_INCLUDE_DIRECTORIES}
     INTERFACE $<INSTALL_INTERFACE:${APR_INSTALL_INCLUDE_DIR}> ${APR_INCLUDE_DIRECTORIES}
   )
-  ADD_DEPENDENCIES(${apr_libname} test_char_header)
-ENDIF()
+  add_dependencies(${apr_libname} test_char_header)
+endif()
 
-IF (BUILD_SHARED_LIBS)
-  ADD_LIBRARY(libaprapp-2 STATIC misc/win32/apr_app.c misc/win32/internal.c ${APR_PUBLIC_HEADERS_GENERATED})
-  LIST(APPEND install_targets libaprapp-2)
-  SET_TARGET_PROPERTIES(libaprapp-2 PROPERTIES COMPILE_DEFINITIONS APR_APP)
-  TARGET_INCLUDE_DIRECTORIES(libaprapp-2
+if (BUILD_SHARED_LIBS)
+  add_library(libaprapp-2 STATIC misc/win32/apr_app.c misc/win32/internal.c ${APR_PUBLIC_HEADERS_GENERATED})
+  list(APPEND install_targets libaprapp-2)
+  set_target_properties(libaprapp-2 PROPERTIES COMPILE_DEFINITIONS APR_APP)
+  target_include_directories(libaprapp-2
     PRIVATE ${APR_INCLUDE_DIRECTORIES}
   )
-ELSE()
-  ADD_LIBRARY(libaprapp-2 STATIC misc/win32/apr_app.c misc/win32/internal.c ${APR_PUBLIC_HEADERS_GENERATED})
-  LIST(APPEND install_targets libaprapp-2)
-  SET_TARGET_PROPERTIES(libaprapp-2 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC;APR_APP")
-  TARGET_INCLUDE_DIRECTORIES(libaprapp-2
+else()
+  add_library(libaprapp-2 STATIC misc/win32/apr_app.c misc/win32/internal.c ${APR_PUBLIC_HEADERS_GENERATED})
+  list(APPEND install_targets libaprapp-2)
+  set_target_properties(libaprapp-2 PROPERTIES COMPILE_DEFINITIONS "APR_DECLARE_STATIC;APR_APP")
+  target_include_directories(libaprapp-2
     PRIVATE ${APR_INCLUDE_DIRECTORIES}
   )
-ENDIF()
+endif()
 
-IF(APR_BUILD_TESTAPR)
-  ENABLE_TESTING()
+if(APR_BUILD_TESTAPR)
+  enable_testing()
   # Create a "check" target that displays test program output to the console.
-  ADD_CUSTOM_TARGET(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
+  add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
 
   # copy data files to build directory so that we can run programs from there
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E make_directory 
+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory 
                   ${PROJECT_BINARY_DIR}/data)
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
                   ${PROJECT_SOURCE_DIR}/test/data/billion-laughs.xml
                   ${PROJECT_BINARY_DIR}/data/billion-laughs.xml)
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different 
                   ${PROJECT_SOURCE_DIR}/test/data/file_datafile.txt
                   ${PROJECT_BINARY_DIR}/data/file_datafile.txt)
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
                   ${PROJECT_SOURCE_DIR}/test/data/mmap_datafile.txt
                   ${PROJECT_BINARY_DIR}/data/mmap_datafile.txt)
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
                   ${PROJECT_SOURCE_DIR}/test/data/mmap_large_datafile.txt
                   ${PROJECT_BINARY_DIR}/data/mmap_large_datafile.txt)
 
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
                   ${PROJECT_SOURCE_DIR}/test/echoargs.bat
                   ${PROJECT_BINARY_DIR}/echoargs.bat)
 
-  ADD_EXECUTABLE(testapp test/testapp.c)
-  TARGET_LINK_LIBRARIES(testapp ${apr_libname} libaprapp-2)
-  SET_TARGET_PROPERTIES(testapp PROPERTIES LINK_FLAGS /entry:wmainCRTStartup)
-  ADD_TEST(NAME testapp COMMAND testapp)
+  add_executable(testapp test/testapp.c)
+  target_link_libraries(testapp ${apr_libname} libaprapp-2)
+  set_target_properties(testapp PROPERTIES LINK_FLAGS /entry:wmainCRTStartup)
+  add_test(NAME testapp COMMAND testapp)
 
-  SET (APR_TEST_SOURCES
+  set (APR_TEST_SOURCES
     test/abts.c
     test/testlfsabi32.c
     test/testlfsabi64.c
@@ -626,30 +626,30 @@ IF(APR_BUILD_TESTAPR)
     test/testutil.c
     )
 
-  FOREACH(testsuite ${APR_TEST_SUITES})
-    LIST(APPEND APR_TEST_SOURCES test/${testsuite}.c)
-  ENDFOREACH()
+  foreach(testsuite ${APR_TEST_SUITES})
+    list(APPEND APR_TEST_SOURCES test/${testsuite}.c)
+  endforeach()
 
-  ADD_EXECUTABLE(testall ${APR_TEST_SOURCES})
-  TARGET_LINK_LIBRARIES(testall ${apr_libname} ws2_32.lib)
-  SET_TARGET_PROPERTIES(testall PROPERTIES COMPILE_DEFINITIONS "BINPATH=$<TARGET_FILE_DIR:testall>")
+  add_executable(testall ${APR_TEST_SOURCES})
+  target_link_libraries(testall ${apr_libname} ws2_32.lib)
+  set_target_properties(testall PROPERTIES COMPILE_DEFINITIONS "BINPATH=$<TARGET_FILE_DIR:testall>")
 
-  FOREACH(test ${APR_TEST_SUITES})
-    ADD_TEST(NAME ${test} COMMAND testall -v ${test})
-  ENDFOREACH()
+  foreach(test ${APR_TEST_SUITES})
+    add_test(NAME ${test} COMMAND testall -v ${test})
+  endforeach()
 
-  ADD_LIBRARY(mod_test MODULE test/mod_test.c)
-  TARGET_LINK_LIBRARIES(mod_test ${apr_libname})
-  SET_PROPERTY(TARGET mod_test APPEND PROPERTY LINK_FLAGS /export:print_hello)
+  add_library(mod_test MODULE test/mod_test.c)
+  target_link_libraries(mod_test ${apr_libname})
+  set_property(TARGET mod_test APPEND PROPERTY LINK_FLAGS /export:print_hello)
   # nasty work-around for difficulties adding more than one additional flag
   # (they get joined in a bad way behind the scenes)
-  GET_PROPERTY(link_flags TARGET mod_test PROPERTY LINK_FLAGS)
-  SET(link_flags "${link_flags} /export:count_reps")
-  SET_TARGET_PROPERTIES(mod_test PROPERTIES LINK_FLAGS ${link_flags})
+  get_property(link_flags TARGET mod_test PROPERTY LINK_FLAGS)
+  set(link_flags "${link_flags} /export:count_reps")
+  set_target_properties(mod_test PROPERTIES LINK_FLAGS ${link_flags})
 
   # Build all the single-source executable files with no special build
   # requirements.
-  SET(single_source_programs
+  set(single_source_programs
     test/dbd.c
     test/echoargs.c
     test/echod.c
@@ -669,43 +669,43 @@ IF(APR_BUILD_TESTAPR)
     test/internal/testutf.c
   )
 
-  FOREACH(sourcefile ${single_source_programs})
-    STRING(REGEX REPLACE ".*/([^\\]+)\\.c" "\\1" proggie ${sourcefile})
-    ADD_EXECUTABLE(${proggie} ${sourcefile})
-    TARGET_LINK_LIBRARIES(${proggie} ${apr_libname})
-    SET_TARGET_PROPERTIES(${proggie} PROPERTIES COMPILE_DEFINITIONS "BINPATH=$<TARGET_FILE_DIR:${proggie}>")
+  foreach(sourcefile ${single_source_programs})
+    string(REGEX REPLACE ".*/([^\\]+)\\.c" "\\1" proggie ${sourcefile})
+    add_executable(${proggie} ${sourcefile})
+    target_link_libraries(${proggie} ${apr_libname})
+    set_target_properties(${proggie} PROPERTIES COMPILE_DEFINITIONS "BINPATH=$<TARGET_FILE_DIR:${proggie}>")
 
-    ADD_DEPENDENCIES(testall ${proggie})
-  ENDFOREACH()
+    add_dependencies(testall ${proggie})
+  endforeach()
 
   # Add tests for programs that run by themselves with no arguments.
-  SET(simple_tests
+  set(simple_tests
     testmutexscope
     testutf
   )
 
-  FOREACH(simple ${simple_tests})
-    ADD_TEST(NAME ${simple} COMMAND ${simple})
-  ENDFOREACH()
+  foreach(simple ${simple_tests})
+    add_test(NAME ${simple} COMMAND ${simple})
+  endforeach()
 
   # testlockperf takes forever on Windows with default counter limit
-  ADD_TEST(NAME testlockperf COMMAND testlockperf -c 50000)
+  add_test(NAME testlockperf COMMAND testlockperf -c 50000)
 
   # dbd and sendfile are run multiple times with different parameters.
-  FOREACH(somedbd ${dbd_drivers})
-    ADD_TEST(NAME dbd-${somedbd} COMMAND dbd ${somedbd})
-  ENDFOREACH()
+  foreach(somedbd ${dbd_drivers})
+    add_test(NAME dbd-${somedbd} COMMAND dbd ${somedbd})
+  endforeach()
 
-  FOREACH(sendfile_mode blocking nonblocking timeout)
-    ADD_TEST(NAME sendfile-${sendfile_mode} COMMAND sendfile client ${sendfile_mode} startserver)
-  ENDFOREACH()
+  foreach(sendfile_mode blocking nonblocking timeout)
+    add_test(NAME sendfile-${sendfile_mode} COMMAND sendfile client ${sendfile_mode} startserver)
+  endforeach()
 
   # No test is added for echod+sockperf.  Those will have to be run manually.
 
-ENDIF (APR_BUILD_TESTAPR)
+endif (APR_BUILD_TESTAPR)
 
 # Installation
-INCLUDE(CMakePackageConfigHelpers)
+include(CMakePackageConfigHelpers)
 
 string(TOLOWER "${PROJECT_NAME}" project_name_lower)
 
@@ -714,68 +714,68 @@ write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${project_name_low
   COMPATIBILITY SameMajorVersion
 )
 
-INSTALL(TARGETS ${install_targets} EXPORT apr-config
+install(TARGETS ${install_targets} EXPORT apr-config
         RUNTIME DESTINATION ${APR_INSTALL_BIN_DIR}
         LIBRARY DESTINATION ${APR_INSTALL_LIB_DIR}
         ARCHIVE DESTINATION ${APR_INSTALL_LIB_DIR}
 )
 
-INSTALL(EXPORT apr-config
+install(EXPORT apr-config
         NAMESPACE apr::
         DESTINATION "lib/cmake/${project_name_lower}"
         FILE "${project_name_lower}-config.cmake"
 )
 
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${project_name_lower}-config-version.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${project_name_lower}-config-version.cmake"
         DESTINATION "lib/cmake/${project_name_lower}"
 )
 
 # For DSO modules, install only binaries
-INSTALL(TARGETS ${install_modules}
+install(TARGETS ${install_modules}
         COMPONENT RUNTIME
         DESTINATION ${APR_INSTALL_BIN_DIR})
 
-IF(INSTALL_PDB)
-  INSTALL(FILES ${install_bin_pdb}
+if(INSTALL_PDB)
+  install(FILES ${install_bin_pdb}
           DESTINATION ${APR_INSTALL_BIN_DIR}
           CONFIGURATIONS RelWithDebInfo Debug)
-ENDIF()
+endif()
 
-INSTALL(FILES ${APR_PUBLIC_HEADERS_STATIC} ${APR_PUBLIC_HEADERS_GENERATED} DESTINATION ${APR_INSTALL_INCLUDE_DIR})
-IF(APR_INSTALL_PRIVATE_H)
+install(FILES ${APR_PUBLIC_HEADERS_STATIC} ${APR_PUBLIC_HEADERS_GENERATED} DESTINATION ${APR_INSTALL_INCLUDE_DIR})
+if(APR_INSTALL_PRIVATE_H)
   # Kludges for unexpected dependencies of httpd 2.x, not installed by default
-  SET(APR_PRIVATE_H_FOR_HTTPD
+  set(APR_PRIVATE_H_FOR_HTTPD
     include/arch/win32/apr_arch_file_io.h
     include/arch/win32/apr_arch_misc.h
     include/arch/win32/apr_arch_utf8.h
     include/arch/win32/apr_private.h
     )
-  INSTALL(FILES ${APR_PRIVATE_H_FOR_HTTPD} DESTINATION ${APR_INSTALL_INCLUDE_DIR}/arch/win32)
-ENDIF()
+  install(FILES ${APR_PRIVATE_H_FOR_HTTPD} DESTINATION ${APR_INSTALL_INCLUDE_DIR}/arch/win32)
+endif()
 
 STRING(TOUPPER "${CMAKE_BUILD_TYPE}" buildtype)
-MESSAGE(STATUS "")
-MESSAGE(STATUS "")
-MESSAGE(STATUS "APR configuration summary:")
-MESSAGE(STATUS "")
+message(STATUS "")
+message(STATUS "")
+message(STATUS "APR configuration summary:")
+message(STATUS "")
 
-MESSAGE(STATUS "  Build type ...................... : ${CMAKE_BUILD_TYPE}")
-MESSAGE(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
-MESSAGE(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
-MESSAGE(STATUS "    Directory for binary files .... : PREFIX/${APR_INSTALL_BIN_DIR}")
-MESSAGE(STATUS "    Directory for library files ... : PREFIX/${APR_INSTALL_LIB_DIR}")
-MESSAGE(STATUS "    Directory for include files ... : PREFIX/${APR_INSTALL_INCLUDE_DIR}")
-MESSAGE(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
-MESSAGE(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")
-MESSAGE(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
-MESSAGE(STATUS "  DBD SQLite3 driver .............. : ${APU_HAVE_SQLITE3}")
-MESSAGE(STATUS "  DBD PostgreSQL .................. : ${APU_HAVE_PGSQL}")
-MESSAGE(STATUS "  XML backend ..................... : ${APR_XML_BACKEND}")
-MESSAGE(STATUS "  Have Crypto ..................... : ${APU_HAVE_CRYPTO}")
-MESSAGE(STATUS "  Have Iconv ...................... : ${APU_HAVE_ICONV}")
-MESSAGE(STATUS "  Library files for XML ........... : ${XMLLIB_LIBRARIES}")
-MESSAGE(STATUS "  DSO build of modular components.. : ${APR_MODULAR_DSO}")
-MESSAGE(STATUS "  Turn on pools debugging ..........: ${APR_POOL_DEBUG}")
-MESSAGE(STATUS "  Build shared libraries .......... : ${BUILD_SHARED_LIBS}")
-MESSAGE(STATUS "  Build test suite ................ : ${APR_BUILD_TESTAPR}")
-MESSAGE(STATUS "  Install private .h for httpd .... : ${APR_INSTALL_PRIVATE_H}")
+message(STATUS "  Build type ...................... : ${CMAKE_BUILD_TYPE}")
+message(STATUS "  Install .pdb (if available)...... : ${INSTALL_PDB}")
+message(STATUS "  Install prefix .................. : ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "    Directory for binary files .... : PREFIX/${APR_INSTALL_BIN_DIR}")
+message(STATUS "    Directory for library files ... : PREFIX/${APR_INSTALL_LIB_DIR}")
+message(STATUS "    Directory for include files ... : PREFIX/${APR_INSTALL_INCLUDE_DIR}")
+message(STATUS "  C compiler ...................... : ${CMAKE_C_COMPILER}")
+message(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")
+message(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
+message(STATUS "  DBD SQLite3 driver .............. : ${APU_HAVE_SQLITE3}")
+message(STATUS "  DBD PostgreSQL .................. : ${APU_HAVE_PGSQL}")
+message(STATUS "  XML backend ..................... : ${APR_XML_BACKEND}")
+message(STATUS "  Have Crypto ..................... : ${APU_HAVE_CRYPTO}")
+message(STATUS "  Have Iconv ...................... : ${APU_HAVE_ICONV}")
+message(STATUS "  Library files for XML ........... : ${XMLLIB_LIBRARIES}")
+message(STATUS "  DSO build of modular components.. : ${APR_MODULAR_DSO}")
+message(STATUS "  Turn on pools debugging ..........: ${APR_POOL_DEBUG}")
+message(STATUS "  Build shared libraries .......... : ${BUILD_SHARED_LIBS}")
+message(STATUS "  Build test suite ................ : ${APR_BUILD_TESTAPR}")
+message(STATUS "  Install private .h for httpd .... : ${APR_INSTALL_PRIVATE_H}")
