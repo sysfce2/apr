@@ -46,9 +46,9 @@ ENDIF()
 
 SET(apr_libname libapr-2)
 
-OPTION(APU_USE_EXPAT        "Use Expat"                    OFF)
-OPTION(APU_USE_LIBXML2      "Use LibXml2"                  OFF)
-OPTION(APU_USE_XMLLITE      "Use XmlLite"                  ON)
+SET(APR_XML_BACKEND "xmllite" CACHE STRING "XML library to use (expat|libxml|xmllite)")
+SET_PROPERTY(CACHE APR_XML_BACKEND PROPERTY STRINGS expat libxml2 xmllite)
+
 OPTION(APR_INSTALL_PRIVATE_H  "Install selected private .h files (for httpd)"  OFF)
 OPTION(APU_HAVE_SQLITE3     "Build SQLite3 DBD driver"     OFF)
 OPTION(APU_HAVE_PGSQL       "Build PostgreSQL DBD driver"  OFF)
@@ -65,11 +65,16 @@ SET(APR_INSTALL_BIN_DIR      "bin"                       CACHE STRING "Install s
 SET(APR_INSTALL_LIB_DIR      "lib"                       CACHE STRING "Install subdirectory for library files")
 SET(APR_INSTALL_INCLUDE_DIR  "include/apr-2"             CACHE STRING "Install subdirectory for include files")
 
-IF(NOT APU_USE_EXPAT AND NOT APU_USE_LIBXML2 AND NOT APU_USE_XMLLITE)
-  MESSAGE(FATAL_ERROR "Either Expat or LibXml2 or XmlLite must be selected")
+IF(APU_USE_EXPAT)
+  MESSAGE(FATAL_ERROR "APU_USE_EXPAT option is not supported. Use APR_XML_BACKEND.")
 ENDIF()
-IF(APU_USE_EXPAT AND APU_USE_LIBXML2)
-  MESSAGE(FATAL_ERROR "Only one of Expat and LibXml2 can be selected")
+
+IF(APU_USE_LIBXML2)
+  MESSAGE(FATAL_ERROR "APU_USE_LIBXML2 option is not supported. Use APR_XML_BACKEND.")
+ENDIF()
+
+IF(APU_USE_XMLLITE)
+  MESSAGE(FATAL_ERROR "APU_USE_XMLLITE option is not supported. Use APR_XML_BACKEND.")
 ENDIF()
 
 IF(APR_MODULAR_DSO AND NOT BUILD_SHARED_LIBS)
@@ -80,12 +85,19 @@ IF(APU_HAVE_CRYPTO)
   FIND_PACKAGE(OpenSSL REQUIRED)
 ENDIF()
 
-IF(APU_USE_EXPAT)
+IF (APR_XML_BACKEND STREQUAL "expat")
   FIND_PACKAGE(expat CONFIG REQUIRED)
-ENDIF()
-
-IF(APU_USE_LIBXML2)
+  SET(XMLLIB_LIBRARIES   expat::expat)
+  SET(APU_USE_EXPAT ON)
+ELSEIF (APR_XML_BACKEND STREQUAL "libxml2")
   FIND_PACKAGE(LibXml2 REQUIRED)
+  SET(XMLLIB_LIBRARIES   LibXml2::LibXml2)
+  SET(APU_USE_LIBXML2 ON)
+ELSEIF (APR_XML_BACKEND STREQUAL "xmllite")
+  SET(XMLLIB_LIBRARIES   "xmllite.lib")
+  SET(APU_USE_XMLLITE ON)
+ELSE()
+  MESSAGE(FATAL_ERROR "Unsupported APR_XML_BACKEND value (${APR_XML_BACKEND}).")
 ENDIF()
 
 IF(APU_HAVE_ICONV)
@@ -139,14 +151,6 @@ ADD_CUSTOM_TARGET(
   test_char_header ALL
   DEPENDS ${PROJECT_BINARY_DIR}/apr_escape_test_char.h
 )
-
-IF(APU_USE_EXPAT)
-  SET(XMLLIB_LIBRARIES   expat::expat)
-ELSEIF(APU_USE_LIBXML2)
-  SET(XMLLIB_LIBRARIES   LibXml2::LibXml2)
-ELSEIF(APU_USE_XMLLITE)
-  SET(XMLLIB_LIBRARIES   "xmllite.lib")
-ENDIF()
 
 IF(APU_HAVE_ICONV)
   SET(XLATE_LIBRARIES    Iconv::Iconv)
@@ -766,9 +770,7 @@ MESSAGE(STATUS "  IPv6 ............................ : ${APR_HAVE_IPV6}")
 MESSAGE(STATUS "  DBD ODBC driver ................. : ${APU_HAVE_ODBC}")
 MESSAGE(STATUS "  DBD SQLite3 driver .............. : ${APU_HAVE_SQLITE3}")
 MESSAGE(STATUS "  DBD PostgreSQL .................. : ${APU_HAVE_PGSQL}")
-MESSAGE(STATUS "  Use Expat ....................... : ${APU_USE_EXPAT}")
-MESSAGE(STATUS "  Use LibXml2 ..................... : ${APU_USE_LIBXML2}")
-MESSAGE(STATUS "  Use XmlLite ..................... : ${APU_USE_XMLLITE}")
+MESSAGE(STATUS "  XML backend ..................... : ${APR_XML_BACKEND}")
 MESSAGE(STATUS "  Have Crypto ..................... : ${APU_HAVE_CRYPTO}")
 MESSAGE(STATUS "  Have Iconv ...................... : ${APU_HAVE_ICONV}")
 MESSAGE(STATUS "  Library files for XML ........... : ${XMLLIB_LIBRARIES}")
