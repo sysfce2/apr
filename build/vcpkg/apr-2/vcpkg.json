@@ -39,6 +39,16 @@
         "sqlite3"
       ]
     },
+    "dbd-postgresql": {
+      "description": "Build PostgreSQL DBD driver",
+      "dependencies": [
+        {
+          "name": "libpq",
+          "default-features": false,
+          "features": []
+        }
+      ]
+    },
     "private-headers": {
       "description": "Install non-standard files required for building Apache httpd"
     },
