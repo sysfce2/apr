@@ -38,9 +38,7 @@ jobs:
             dso-build: ON
             packages: expat
             config: >-
-              -DAPU_USE_XMLITE=OFF
-              -DAPU_USE_EXPAT=ON
-              -DAPU_USE_LIBXML2=OFF
+              -DAPR_XML_BACKEND=expat
           - name: Use Libxml2
             os: windows-latest
             triplet: x64-windows
@@ -51,9 +49,7 @@ jobs:
             dso-build: ON
             packages: libxml2
             config: >-
-              -DAPU_USE_XMLITE=OFF
-              -DAPU_USE_EXPAT=OFF
-              -DAPU_USE_LIBXML2=ON
+              -DAPR_XML_BACKEND=libxml2
           - name: Use XmlLite
             os: windows-latest
             triplet: x64-windows
@@ -62,11 +58,8 @@ jobs:
             generator: Ninja
             build-shared: ON
             dso-build: ON
-            packages: libxml2
             config: >-
-              -DAPU_USE_XMLITE=ON
-              -DAPU_USE_EXPAT=OFF
-              -DAPU_USE_LIBXML2=OFF
+              -DAPR_XML_BACKEND=xmllite
           - name: Shared (no DSO)
             os: windows-latest
             triplet: x64-windows
